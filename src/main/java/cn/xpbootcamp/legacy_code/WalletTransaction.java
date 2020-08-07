@@ -10,6 +10,7 @@ import cn.xpbootcamp.legacy_code.utils.RedisDistributedLock;
 import javax.transaction.InvalidTransactionException;
 
 public class WalletTransaction {
+    private static final int VALID_TRANSACTION_DURATION = 1728000000;
     private String id;
     private Long buyerId;
     private Long sellerId;
@@ -68,12 +69,11 @@ public class WalletTransaction {
                 return false;
             }
             if (status == STATUS.EXECUTED) return true; // double check
-            long executionInvokedTimestamp = System.currentTimeMillis();
-            // 交易超过20天
-            if (executionInvokedTimestamp - createdTimestamp > 1728000000) {
-                this.status = STATUS.EXPIRED;
+
+            if (isTransactionExpired()) {
                 return false;
             }
+
             WalletService walletService = new WalletServiceImpl(new UserRepositoryImpl());
             String walletTransactionId = walletService.moveMoney(id, buyerId, sellerId, amount);
             if (walletTransactionId != null) {
@@ -89,6 +89,16 @@ public class WalletTransaction {
                 RedisDistributedLock.getSingletonInstance().unlock(id);
             }
         }
+    }
+
+    private boolean isTransactionExpired() {
+        long executionInvokedTimestamp = System.currentTimeMillis();
+
+        if (executionInvokedTimestamp - createdTimestamp > VALID_TRANSACTION_DURATION) {
+            this.status = STATUS.EXPIRED;
+            return true;
+        }
+        return false;
     }
 
 }

@@ -38,6 +38,14 @@ public class WalletTransaction {
         this.createdTimestamp = System.currentTimeMillis();
     }
 
+    public void setAmount(Double amount) {
+        this.amount = amount;
+    }
+
+    public void setStatus(STATUS status) {
+        this.status = status;
+    }
+
     public boolean execute() throws InvalidTransactionException {
         if (buyerId == null || (sellerId == null || amount < 0.0)) {
             throw new InvalidTransactionException("This is an invalid transaction");

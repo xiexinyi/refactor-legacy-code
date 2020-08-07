@@ -22,10 +22,10 @@ public class WalletTransaction {
 
 
     public WalletTransaction(String preAssignedId, Long buyerId, Long sellerId, Long productId, String orderId) {
-        if (preAssignedId != null && !preAssignedId.isEmpty()) {
-            this.id = preAssignedId;
-        } else {
+        if (preAssignedId == null || preAssignedId.isEmpty()) {
             this.id = IdGenerator.generateTransactionId();
+        } else {
+            this.id = preAssignedId;
         }
         if (!this.id.startsWith("t_")) {
             this.id = "t_" + preAssignedId;
@@ -44,6 +44,10 @@ public class WalletTransaction {
 
     public void setStatus(STATUS status) {
         this.status = status;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public boolean execute() throws InvalidTransactionException {

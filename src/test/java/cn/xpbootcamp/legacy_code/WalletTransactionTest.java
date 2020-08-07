@@ -18,6 +18,38 @@ class WalletTransactionTest {
     private WalletTransaction walletTransaction;
 
     @Test
+    void should_set_pre_assigned_id_with_t_prefix_to_id_if_it_is_not_null_or_empty() {
+        walletTransaction = new WalletTransaction(
+                "preAssignedId", BUYER_ID, SELLER_ID, PRODUCT_ID, "orderId");
+
+        assertThat(walletTransaction.getId()).isEqualTo("t_preAssignedId");
+    }
+
+    @Test
+    void should_set_pre_assigned_id_to_id_if_it_starts_with_t() {
+        walletTransaction = new WalletTransaction(
+                "t_preAssignedId", BUYER_ID, SELLER_ID, PRODUCT_ID, "orderId");
+
+        assertThat(walletTransaction.getId()).isEqualTo("t_preAssignedId");
+    }
+
+    @Test
+    void should_set_id_if_pre_assigned_id_is_null() {
+        walletTransaction = new WalletTransaction(
+                null, BUYER_ID, SELLER_ID, PRODUCT_ID, "orderId");
+
+        assertThat(walletTransaction.getId()).isNotNull();
+    }
+
+    @Test
+    void should_set_id_if_pre_assigned_id_is_empty() {
+        walletTransaction = new WalletTransaction(
+                "", BUYER_ID, SELLER_ID, PRODUCT_ID, "orderId");
+
+        assertThat(walletTransaction.getId()).isNotBlank();
+    }
+
+    @Test
     void should_throw_exception_if_buyer_id_is_null() {
         walletTransaction = new WalletTransaction(
                 "preAssignedId", null, SELLER_ID, PRODUCT_ID, "orderId");

@@ -64,11 +64,10 @@ public class WalletTransaction {
         try {
             isLocked = RedisDistributedLock.getSingletonInstance().lock(id);
 
-            // 锁定未成功，返回false
             if (!isLocked) {
                 return false;
             }
-            if (status == STATUS.EXECUTED) return true; // double check
+            if (status == STATUS.EXECUTED) return true;
 
             if (isTransactionExpired()) {
                 return false;

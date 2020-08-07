@@ -14,29 +14,32 @@ class WalletTransactionTest {
     private static final Long BUYER_ID = 1L;
     private static final Long SELLER_ID = 2L;
     private static final Long PRODUCT_ID = 3L;
+    private static final String ORDER_ID = "orderId";
+    private static final String PRE_ASSIGNED_ID = "preAssignedId";
+    private static final String EXCEPTION_MESSAGE = "This is an invalid transaction";
 
     private WalletTransaction walletTransaction;
 
     @Test
     void should_set_pre_assigned_id_with_t_prefix_to_id_if_it_is_not_null_or_empty() {
         walletTransaction = new WalletTransaction(
-                "preAssignedId", BUYER_ID, SELLER_ID, PRODUCT_ID, "orderId");
+                PRE_ASSIGNED_ID, BUYER_ID, SELLER_ID, PRODUCT_ID, ORDER_ID);
 
-        assertThat(walletTransaction.getId()).isEqualTo("t_preAssignedId");
+        assertThat(walletTransaction.getId()).isEqualTo("t_" + PRE_ASSIGNED_ID);
     }
 
     @Test
     void should_set_pre_assigned_id_to_id_if_it_starts_with_t() {
         walletTransaction = new WalletTransaction(
-                "t_preAssignedId", BUYER_ID, SELLER_ID, PRODUCT_ID, "orderId");
+                "t_" + PRE_ASSIGNED_ID, BUYER_ID, SELLER_ID, PRODUCT_ID, ORDER_ID);
 
-        assertThat(walletTransaction.getId()).isEqualTo("t_preAssignedId");
+        assertThat(walletTransaction.getId()).isEqualTo("t_" + PRE_ASSIGNED_ID);
     }
 
     @Test
     void should_set_id_if_pre_assigned_id_is_null() {
         walletTransaction = new WalletTransaction(
-                null, BUYER_ID, SELLER_ID, PRODUCT_ID, "orderId");
+                null, BUYER_ID, SELLER_ID, PRODUCT_ID, ORDER_ID);
 
         assertThat(walletTransaction.getId()).isNotNull();
     }
@@ -44,7 +47,7 @@ class WalletTransactionTest {
     @Test
     void should_set_id_if_pre_assigned_id_is_empty() {
         walletTransaction = new WalletTransaction(
-                "", BUYER_ID, SELLER_ID, PRODUCT_ID, "orderId");
+                "", BUYER_ID, SELLER_ID, PRODUCT_ID, ORDER_ID);
 
         assertThat(walletTransaction.getId()).isNotBlank();
     }
@@ -52,42 +55,42 @@ class WalletTransactionTest {
     @Test
     void should_throw_exception_if_buyer_id_is_null() {
         walletTransaction = new WalletTransaction(
-                "preAssignedId", null, SELLER_ID, PRODUCT_ID, "orderId");
+                PRE_ASSIGNED_ID, null, SELLER_ID, PRODUCT_ID, ORDER_ID);
 
         InvalidTransactionException invalidTransactionException = assertThrows(InvalidTransactionException.class,
                 () -> walletTransaction.execute());
 
-        assertThat(invalidTransactionException.getMessage()).isEqualTo("This is an invalid transaction");
+        assertThat(invalidTransactionException.getMessage()).isEqualTo(EXCEPTION_MESSAGE);
     }
 
     @Test
     void should_throw_exception_if_seller_id_is_null() {
         walletTransaction = new WalletTransaction(
-                "preAssignedId", BUYER_ID, null, PRODUCT_ID, "orderId");
+                PRE_ASSIGNED_ID, BUYER_ID, null, PRODUCT_ID, ORDER_ID);
 
         InvalidTransactionException invalidTransactionException = assertThrows(InvalidTransactionException.class,
                 () -> walletTransaction.execute());
 
-        assertThat(invalidTransactionException.getMessage()).isEqualTo("This is an invalid transaction");
+        assertThat(invalidTransactionException.getMessage()).isEqualTo(EXCEPTION_MESSAGE);
     }
 
     @Test
     void should_throw_exception_if_amount_is_less_than_zero() {
         walletTransaction = new WalletTransaction(
-                "preAssignedId", BUYER_ID, SELLER_ID, PRODUCT_ID, "orderId");
+                PRE_ASSIGNED_ID, BUYER_ID, SELLER_ID, PRODUCT_ID, ORDER_ID);
 
         walletTransaction.setAmount(-1.0);
 
         InvalidTransactionException invalidTransactionException = assertThrows(InvalidTransactionException.class,
                 () -> walletTransaction.execute());
 
-        assertThat(invalidTransactionException.getMessage()).isEqualTo("This is an invalid transaction");
+        assertThat(invalidTransactionException.getMessage()).isEqualTo(EXCEPTION_MESSAGE);
     }
 
     @Test
     void should_return_true_when_status_is_executed() throws InvalidTransactionException {
         walletTransaction = new WalletTransaction(
-                "preAssignedId", BUYER_ID, SELLER_ID, PRODUCT_ID, "orderId");
+                PRE_ASSIGNED_ID, BUYER_ID, SELLER_ID, PRODUCT_ID, ORDER_ID);
 
         walletTransaction.setAmount(0.0);
         walletTransaction.setStatus(STATUS.EXECUTED);

@@ -75,19 +75,22 @@ public class WalletTransaction {
             }
 
             WalletService walletService = new WalletServiceImpl(new UserRepositoryImpl());
-            String walletTransactionId = walletService.moveMoney(id, buyerId, sellerId, amount);
-            if (walletTransactionId != null) {
-                this.walletTransactionId = walletTransactionId;
-                this.status = STATUS.EXECUTED;
-                return true;
-            } else {
-                this.status = STATUS.FAILED;
-                return false;
-            }
+            this.walletTransactionId = walletService.moveMoney(id, buyerId, sellerId, amount);
+            return setTransactionStatus();
         } finally {
             if (isLocked) {
                 RedisDistributedLock.getSingletonInstance().unlock(id);
             }
+        }
+    }
+
+    private boolean setTransactionStatus() {
+        if (walletTransactionId != null) {
+            this.status = STATUS.EXECUTED;
+            return true;
+        } else {
+            this.status = STATUS.FAILED;
+            return false;
         }
     }
 
